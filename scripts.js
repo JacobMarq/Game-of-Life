@@ -1,24 +1,67 @@
 let Cells;
-var generationsArray = [];
+//var generationsArray = [];
 let grid;
-let automated = false;
+let playing = false;
 let generations;
 let deaths = 0;
 let births = 0;
-//sets generations lived == 1yr
-let lifespan = 0;
+let ageArr = [];
+let neighborsArr = [];
 
-const GridContainer = document.getElementById('grid');
+//btns
 const populationbtn = document.getElementById('populate');
-const beginLifeCyclebtn = document.getElementById('begin-life-cycle');
-const automatebtn = document.getElementById('automate');
+const playStopBtn = document.getElementById('play-stop');
+const playbtn = document.getElementById('play');
+const stopbtn = document.getElementById('stop');
+const closebtn = document.getElementById('close');
 
+//Containers
+const GridContainer = document.getElementById('grid');
+const ResultScreen = document.getElementById('result');
 
-function Automate()
+//result data
+const birthsResult = document.getElementById('births');
+const deathsResult = document.getElementById('deaths');
+const generationsResult = document.getElementById('generations');
+const longestLivedResult = document.getElementById('longest-lived');
+const averageLifespanResult = document.getElementById('average-lifespan');
+
+function Play()
 {
-    automatebtn.style.color = automatebtn.style.color == 'rgb(196, 196, 196)' ? 'yellow' : 'rgb(196, 196, 196)';
-    automated = automated == true ? false : true;
-    console.log(CalculateLifespan());
+    playbtn.style.display = playbtn.style.display === 'block' ? 'none' : 'block';
+    stopbtn.style.display = stopbtn.style.display === 'block' ? 'none' : 'block';
+    playing = playing == true ? false : true;
+    
+    if(!playing)
+    {
+        birthsResult.textContent = births;
+        deathsResult.textContent = deaths;
+        generationsResult.textContent = generations;
+        averageLifespanResult.textContent = Lifespan('a') + 'gen';
+        longestLivedResult.textContent = Lifespan('b') + 'gen';
+        ResultScreen.style.display = 'flex';
+
+        ClearGrid();
+
+        neighborsArr = [];
+        ageArr = [];
+        //generationsArray = [];
+        deaths = 0;
+        births = 0;
+        generations = 0;
+
+        populationbtn.style.cursor = 'pointer';
+    }
+    else if(playing && GridContainer.childElementCount !== 0)
+    {
+        setTimeout(CalculateGen, 100);
+    }
+}
+function ClearGrid()
+{
+    while(GridContainer.firstChild){
+        GridContainer.removeChild(GridContainer.firstChild);
+    }
 }
 function CreateGrid()
 {
@@ -29,6 +72,7 @@ function CreateGrid()
     }
 }
 
+//simulation
 
 function Populate()
 {      
@@ -40,6 +84,13 @@ function Populate()
     return arr;
     }
     
+    if(GridContainer.childElementCount !== 0)
+    {
+        return;
+    }
+    CreateGrid();
+
+    populationbtn.style.cursor = 'not-allowed';
     generations = 0;
     Cells = document.getElementsByClassName('cell');
     generationsArray = [];
@@ -47,14 +98,13 @@ function Populate()
     grid = Make2DArray();
     for(i = 0; i < 25; i++){
         for(j = 0; j < 25; j++){
-            grid[i][j] = Math.floor(Math.random() * 2);
-            if(grid[i][j] == 1){births++;}else{continue;}
+            grid[i][j] = {isAlive: Math.floor(Math.random() * 2), Age: 0};
+            if(grid[i][j].isAlive == 1){births++;}else{continue;}
         }
     }
     
     UpdateScreen();
 }
-
 function UpdateScreen()
 {
     neighborsArr = [];
@@ -64,40 +114,28 @@ function UpdateScreen()
     
     for(j = 0; j < 25; j++){
         for(k = 0; k < 25; k++){
-            if(grid[j][k] == 1){
+            if(grid[j][k].isAlive == 1){
+                Cells[i].classList.remove('dead');
                 Cells[i].classList.add('alive');
-            }else if(grid[j][k] == 0){
+            }else if(grid[j][k].isAlive == 0){
+                Cells[i].classList.remove('alive');
                 Cells[i].classList.add('dead');
             }
             i++;
         }
     }
     
-    SavePopulation();
+    //SavePopulation();
 
-    if(generations % 20 == 0)
-    {
-        
-    }
-
-    if(automated)
-    {
+    if(playing)
+    {   
         setTimeout(CalculateGen, 100);
     }
 }
-
 function CalculateGen()
 {
     // for every cell == grid[x][y]
-    // save sum of the numbers below in var 'n' (neighbors)
-    // grid[x][y - 1]
-    // grid[x][y + 1]
-    // grid[x - 1][y]
-    // grid[x - 1][y - 1]
-    // grid[x - 1][y + 1]
-    // grid[x + 1][y]
-    // grid[x + 1][y - 1]
-    // grid[x + 1][y + 1]
+    // save sum of alive neighbors below in var 'n' (neighbors)
     // cell = cell == 0 && neighbors == 3 ? 1 : 0
     // cell = cell == 1 && neighbors < 2 || cell == 1 && neighbors > 3 ? 0 : 1
 
@@ -108,62 +146,62 @@ function CalculateGen()
             var n;
 
             if(x == 0 && y == 0){
-                n = grid[x][y + 1]
-                + grid[x + 1][y]
-                + grid[x + 1][y + 1];
+                n = grid[x][y + 1].isAlive
+                + grid[x + 1][y].isAlive
+                + grid[x + 1][y + 1].isAlive;
             }
             else if(x == 0 && y < 24){
-                n = grid[x][y - 1]
-                + grid[x][y + 1]
-                + grid[x + 1][y]
-                + grid[x + 1][y - 1]
-                + grid[x + 1][y + 1];
+                n = grid[x][y - 1].isAlive
+                + grid[x][y + 1].isAlive
+                + grid[x + 1][y].isAlive
+                + grid[x + 1][y - 1].isAlive
+                + grid[x + 1][y + 1].isAlive;
             }
             else if(x == 0 && y == 24){
-                n = grid[x][y - 1]
-                + grid[x + 1][y]
-                + grid[x + 1][y - 1];
+                n = grid[x][y - 1].isAlive
+                + grid[x + 1][y].isAlive
+                + grid[x + 1][y - 1].isAlive;
             }
             else if(x < 24 && y == 0){
-                n = grid[x][y + 1]
-                + grid[x - 1][y]            
-                + grid[x - 1][y + 1]
-                + grid[x + 1][y]                
-                + grid[x + 1][y + 1];
+                n = grid[x][y + 1].isAlive
+                + grid[x - 1][y].isAlive           
+                + grid[x - 1][y + 1].isAlive
+                + grid[x + 1][y].isAlive                
+                + grid[x + 1][y + 1].isAlive;
             }
             else if(x < 24 && y < 24){
-                n = grid[x][y - 1]
-                + grid[x][y + 1]
-                + grid[x - 1][y]
-                + grid[x - 1][y - 1]
-                + grid[x - 1][y + 1]
-                + grid[x + 1][y]
-                + grid[x + 1][y - 1]
-                + grid[x + 1][y + 1];
+                n = grid[x][y - 1].isAlive
+                + grid[x][y + 1].isAlive
+                + grid[x - 1][y].isAlive
+                + grid[x - 1][y - 1].isAlive
+                + grid[x - 1][y + 1].isAlive
+                + grid[x + 1][y].isAlive
+                + grid[x + 1][y - 1].isAlive
+                + grid[x + 1][y + 1].isAlive;
             }
             else if(x < 24 && y == 24){
-                n = grid[x][y - 1]
-                + grid[x - 1][y]            
-                + grid[x - 1][y - 1]
-                + grid[x + 1][y]                
-                + grid[x + 1][y - 1];
+                n = grid[x][y - 1].isAlive
+                + grid[x - 1][y].isAlive            
+                + grid[x - 1][y - 1].isAlive
+                + grid[x + 1][y].isAlive                
+                + grid[x + 1][y - 1].isAlive;
             }
             else if(x == 24 && y == 0){
-                n = grid[x][y + 1]
-                + grid[x - 1][y]
-                + grid[x - 1][y + 1];
+                n = grid[x][y + 1].isAlive
+                + grid[x - 1][y].isAlive
+                + grid[x - 1][y + 1].isAlive;
             }
             else if(x == 24 && y < 24){
-                n = grid[x][y - 1]
-                + grid[x][y + 1]
-                + grid[x - 1][y]
-                + grid[x - 1][y - 1]
-                + grid[x - 1][y + 1];
+                n = grid[x][y - 1].isAlive
+                + grid[x][y + 1].isAlive
+                + grid[x - 1][y].isAlive
+                + grid[x - 1][y - 1].isAlive
+                + grid[x - 1][y + 1].isAlive;
             }
             else{
-                n = grid[x][y - 1]
-                + grid[x - 1][y]
-                + grid[x - 1][y - 1];
+                n = grid[x][y - 1].isAlive
+                + grid[x - 1][y].isAlive
+                + grid[x - 1][y - 1].isAlive;
             }
             
             Cells[currentCell].classList.remove('alive');
@@ -177,14 +215,71 @@ function CalculateGen()
 
     UpdateScreen();
 }
-//save the current population
-let lifedata = [];
-
 function Census(liveNeighbors)
 {
     neighborsArr.push(liveNeighbors);
 }
-function SavePopulation()
+function LifeCycle()
+{
+    let i = 0;
+    
+    
+    for(x = 0; x < 25; x++){
+        for(y = 0; y < 25; y++){
+            if(grid[x][y].isAlive == 1)
+            {
+                if(grid[x][y].Age > 0)
+                {
+                    ageArr.push(grid[x][y].Age);
+                }
+                if(neighborsArr[i] < 2 || neighborsArr[i] > 3)
+                {
+                    grid[x][y].isAlive = 0;
+                    grid[x][y].Age = 0;
+                    deaths++;
+                }
+                else
+                {
+                    grid[x][y].isAlive = 1;
+                    grid[x][y].Age++;
+                }
+            }
+            else if(grid[x][y].isAlive == 0)
+            {
+                if(neighborsArr[i] == 3)
+                {
+                    grid[x][y].isAlive = 1;
+                    grid[x][y].Age = 0;
+                    births++;
+                }
+                else
+                {
+                    grid[x][y].isAlive = 0;
+                    grid[x][y].Age = 0;
+                }
+            }
+            i++;
+        }
+    }
+}
+
+//data collection
+
+function Lifespan(choice)
+{
+    if(choice == 'a')
+    {   
+        let sum = ageArr.reduce((partial_sum, a) => partial_sum + a, 0);
+        let averageLifespan = Math.round(sum / (ageArr.length + 1));
+        return averageLifespan;
+    }
+    else if(choice == 'b')
+    {
+        let longestLived = Math.max(...ageArr);
+        return longestLived;
+    }
+}
+/*function SavePopulation()
 {
     var currentGridlength = grid.length;
     let currentGrid = new Array(currentGridlength);
@@ -195,65 +290,10 @@ function SavePopulation()
     }
     
     generationsArray.push(currentGrid);
-}
-function LifeCycle()
-{
-    let i = 0;
-    
-    
-    for(x = 0; x < 25; x++){
-        for(y = 0; y < 25; y++){
-            if(grid[x][y] == 1)
-            {
-                if(neighborsArr[i] < 2 || neighborsArr[i] > 3)
-                {
-                    grid[x][y] = 0;
-                    deaths++;
-                }
-                else
-                {
-                    grid[x][y] = 1;
-                    SaveLifeData(x, y);
-                }
-            }
-            else if(grid[x][y] == 0)
-            {
-                if(neighborsArr[i] == 3)
-                {
-                    grid[x][y] = 1;
-                    births++;
-                }
-                else
-                {
-                    grid[x][y] = 0;
-                }
-            }
-            i++;
-        }
-    }
-}
-function SaveLifeData(x, y)
-{
-    let string = x.toString() + y.toString();
-    console.log(string);
-    lifedata.push(string);
-}
-function CalculateLifespan()
-{
-    let instances = lifedata.reduce(function(obj, item) {
-        if (!obj[item]) {
-          obj[item] = 0;
-        }
-        obj[item]++;
-        return obj;
-      }, {});
+}*/
 
-      return instances;     
-}
-
-let neighborsArr = [];
-
-CreateGrid();
-automatebtn.addEventListener('click', ()=>Automate());
+closebtn.addEventListener('click', ()=>{ResultScreen.style.display = 'none';});
+playbtn.addEventListener('click', ()=>Play());
+stopbtn.addEventListener('click', ()=>Play());
 populationbtn.addEventListener('click', ()=>Populate());
-beginLifeCyclebtn.addEventListener('click', ()=>CalculateGen());
+playStopBtn.addEventListener('click', ()=>Play());

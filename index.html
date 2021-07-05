@@ -14,13 +14,27 @@
                 <h1>The Game of Life</h1>
             </div>
         </header>
+        <div id="result">
+            <h2>Result:</h2>
+            <ul class="result-list">
+                <li>Births:<span id="births">0</span></li>
+                <li>Deaths:<span id="deaths">0</span></li>
+                <li>Generations:<span id="generations">0</span></li>
+                <li>Longest Lived:<span id="longest-lived">0</span></li>
+                <li>Average Lifespan:<span id="average-lifespan">0</span></li>
+            </ul>
+            <button id="close">close</button>
+        </div>
         <div class="container">
             <div id="grid">
 
             </div>
             <button id="populate">Populate</button>
-            <button id="begin-life-cycle">Begin Life Cycle</button>
-            <a id="automate" style="color: rgb(196, 196, 196);">A</a>
+            <button id="play-stop">Play / Stop</button>
+            <a id="automate" style="color: rgb(196, 196, 196);">
+                <img id="play" style="display: block;" src="Img/play-fill.svg">
+                <img id="stop" style="display: none;" src="Img/stop-fill.svg">
+            </a>
         </div>
     </body>
     <script src="scripts.js"></script>

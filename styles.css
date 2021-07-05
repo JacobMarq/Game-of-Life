@@ -30,6 +30,57 @@ header{
     justify-content: center;
     color: white;
 }
+
+/* ==========
+    Result 
+========== */
+
+#result{
+    display: none;
+    position: absolute;
+    justify-self: center;
+    align-self: center;
+    flex-direction: column;
+    margin-top: 80px;
+    height: 360px;
+    width: 300px;
+    z-index: 1;
+    border: solid 10px;
+    border-color: rgb(10, 87, 74);
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 0 5px black;
+}
+h2{
+    font-size: xx-large;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+.result-list{
+    height: 200px;
+    width: 280px;
+    list-style: none;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 0;
+    font-size: large;
+    line-height: 3rem;
+    overflow: scroll;
+    background-color: white;
+}
+li{
+    display: flex;
+    justify-content: space-between;
+}
+#close{
+    cursor: pointer;
+}
+
+/* ==========
+    Game 
+========== */
+
 .container{
     display: flex;
     position: relative;
@@ -56,6 +107,7 @@ header{
 .cell{
     background-color: white;
 }
+
 button{
     margin: auto;
     height: 40px;
@@ -63,7 +115,6 @@ button{
     font-size: 1.1rem;
     font-weight: 400;
 }
-
 #automate{
     position: absolute;
     justify-content: center;
@@ -73,21 +124,47 @@ button{
     top: 5px;
     color: rgb(196, 196, 196);
     font-size: 2rem;
+    height: 38px;
     width: 38px;
     transition: all 0.2s;
     user-select: none;
     text-shadow: 0 0 3px black;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(10, 87, 74, 0.8);
     border-radius: 8px;
 }
 #automate:hover{
     cursor: pointer;
-    color: gold;
-    background-color: rgba(168, 168, 168, 0.753);
+    background-color: rgba(3, 141, 118, 0.8);
     text-shadow: 0 0 3px black;
     transition: all 0.2s;
 }
+#automate img:hover{
+    padding-top: 9px;
+    transform: scale(1.2);
+}
+#play{
+    height: 20px;
+    width: 20px;
+    padding: 9.5px;
+    filter: invert(88%) sepia(93%) saturate(3827%) hue-rotate(186deg) brightness(120%) contrast(100%);
+   
+}
+#stop{
+    height: 20px;
+    width: 20px;
+    padding: 9px;
+    filter: invert(88%) sepia(93%) saturate(3827%) hue-rotate(186deg) brightness(120%) contrast(100%);
+}
+#populate{
+    cursor: pointer;
+}
+#play-stop{
+    cursor: pointer;
+}
 
+/* ==========
+    Cells 
+========== */
 
 .dead{
     background-color: rgba(0, 0, 0, 0%);
