@@ -143,74 +143,37 @@ function CalculateGen()
 
     for(x = 0; x < 25; x++){
         for(y = 0; y < 25; y++){
-            var n;
+            var n = 0;
 
-            if(x == 0 && y == 0){
-                n = grid[x][y + 1].isAlive
-                + grid[x + 1][y].isAlive
-                + grid[x + 1][y + 1].isAlive;
+            //checking nieghbors
+            for(a=-1; a<2; a++){
+                for(b=-1; b<2; b++){
+                    if(a==0 && b==0){
+                        continue;
+                    }
+                    else if(a>0 || b>0){
+                        if(a>0 && x==24 || b<0 && y==0){n=n;}
+                        else if(b>0 && y==24 || a<0 && x==0){n=n;}
+                        else{n = n + grid[x + a][y + b].isAlive;}
+                    }
+                    else{
+                        if(a<0 && x==0){n=n;}
+                        else if(b<0 && y==0){n=n;}
+                        else{n = n + grid[x + a][y + b].isAlive;}
+                    }
+                }
             }
-            else if(x == 0 && y < 24){
-                n = grid[x][y - 1].isAlive
-                + grid[x][y + 1].isAlive
-                + grid[x + 1][y].isAlive
-                + grid[x + 1][y - 1].isAlive
-                + grid[x + 1][y + 1].isAlive;
-            }
-            else if(x == 0 && y == 24){
-                n = grid[x][y - 1].isAlive
-                + grid[x + 1][y].isAlive
-                + grid[x + 1][y - 1].isAlive;
-            }
-            else if(x < 24 && y == 0){
-                n = grid[x][y + 1].isAlive
-                + grid[x - 1][y].isAlive           
-                + grid[x - 1][y + 1].isAlive
-                + grid[x + 1][y].isAlive                
-                + grid[x + 1][y + 1].isAlive;
-            }
-            else if(x < 24 && y < 24){
-                n = grid[x][y - 1].isAlive
-                + grid[x][y + 1].isAlive
-                + grid[x - 1][y].isAlive
-                + grid[x - 1][y - 1].isAlive
-                + grid[x - 1][y + 1].isAlive
-                + grid[x + 1][y].isAlive
-                + grid[x + 1][y - 1].isAlive
-                + grid[x + 1][y + 1].isAlive;
-            }
-            else if(x < 24 && y == 24){
-                n = grid[x][y - 1].isAlive
-                + grid[x - 1][y].isAlive            
-                + grid[x - 1][y - 1].isAlive
-                + grid[x + 1][y].isAlive                
-                + grid[x + 1][y - 1].isAlive;
-            }
-            else if(x == 24 && y == 0){
-                n = grid[x][y + 1].isAlive
-                + grid[x - 1][y].isAlive
-                + grid[x - 1][y + 1].isAlive;
-            }
-            else if(x == 24 && y < 24){
-                n = grid[x][y - 1].isAlive
-                + grid[x][y + 1].isAlive
-                + grid[x - 1][y].isAlive
-                + grid[x - 1][y - 1].isAlive
-                + grid[x - 1][y + 1].isAlive;
-            }
-            else{
-                n = grid[x][y - 1].isAlive
-                + grid[x - 1][y].isAlive
-                + grid[x - 1][y - 1].isAlive;
-            }
-            
+            //end of checking
+
             Cells[currentCell].classList.remove('alive');
             Cells[currentCell].classList.remove('dead');
 
             Census(n);
             currentCell++;
+
         }
     }
+
     LifeCycle();
 
     UpdateScreen();
